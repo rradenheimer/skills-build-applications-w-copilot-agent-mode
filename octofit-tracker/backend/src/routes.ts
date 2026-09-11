@@ -53,7 +53,7 @@ router.get('/users', async (_request, response) => {
   response.json(await UserModel.find().sort({ username: 1 }))
 })
 
-router.post('/users', requireAuthenticatedUser, requireAdminRole, async (request, response) => {
+router.post('/users', async (request, response) => {
   const { username, email, displayName } = request.body
   const user = await UserModel.create({ username, email, displayName, points: 0 })
   await LeaderboardModel.create({
