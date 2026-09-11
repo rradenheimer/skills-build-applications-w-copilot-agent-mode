@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { ActivityModel, LeaderboardModel, TeamModel, UserModel, WorkoutModel } from '../models.js';
 
 const connectionString = process.env.MONGODB_URI || 'mongodb://localhost:27017/octofit_db';
+const seedDescription = 'Seed the octofit_db database with test data';
 
 async function seedDatabase() {
   try {
