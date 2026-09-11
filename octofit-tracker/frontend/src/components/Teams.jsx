@@ -1,7 +1,8 @@
 import useApiCollection from './useApiCollection.js'
 
-const endpoint = import.meta.env.VITE_CODESPACE_NAME
-  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev/api/teams/`
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const endpoint = codespaceName
+  ? `https://${codespaceName}-8000.app.github.dev/api/teams/`
   : 'http://localhost:8000/api/teams/'
 
 function Teams() {
