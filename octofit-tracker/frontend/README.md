@@ -2,6 +2,12 @@
 
 This React 19 + Vite app uses `react-router-dom` navigation and calls the backend API routes for users, teams, activities, leaderboard, and workouts.
 
+## Stack snapshot
+
+- Presentation tier: React 19 + Vite + Bootstrap
+- Logic tier integration: Express API routes under `/api/*`
+- Data tier integration: MongoDB-backed resources exposed by the backend
+
 ## Environment variable setup
 
 Define `VITE_CODESPACE_NAME` so the app can call your Codespaces backend URL:
