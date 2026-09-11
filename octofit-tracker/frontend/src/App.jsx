@@ -6,6 +6,11 @@ import Users from './components/Users.jsx'
 import Workouts from './components/Workouts.jsx'
 import './App.css'
 
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const apiOrigin = codespaceName
+  ? `https://${codespaceName}-8000.app.github.dev`
+  : 'http://localhost:8000'
+
 const navItems = [
   { to: '/users', label: 'Users' },
   { to: '/teams', label: 'Teams' },
@@ -23,6 +28,12 @@ function App() {
           <p className="text-body-secondary mb-3">
             Track workouts, activity, teams, and leaderboard standings.
           </p>
+          <p className="small text-body-secondary mb-3">API origin: {apiOrigin}</p>
+          {!codespaceName ? (
+            <div className="alert alert-warning py-2 px-3 small" role="alert">
+              VITE_CODESPACE_NAME is not set, so localhost API fallback is in use.
+            </div>
+          ) : null}
           <nav className="nav nav-pills flex-wrap gap-2">
             {navItems.map(({ to, label }) => (
               <NavLink
@@ -46,6 +57,7 @@ function App() {
             <Route path="/activities" element={<Activities />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/workouts" element={<Workouts />} />
+            <Route path="*" element={<Navigate to="/users" replace />} />
           </Routes>
         </main>
       </div>
