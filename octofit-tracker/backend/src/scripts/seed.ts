@@ -5,6 +5,7 @@ const connectionString = process.env.MONGODB_URI || 'mongodb://localhost:27017/o
 
 async function seedDatabase() {
   try {
+    console.log('Seed the octofit_db database with test data');
     await mongoose.connect(connectionString);
 
     console.log('Connected to octofit_db');
