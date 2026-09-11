@@ -1,5 +1,5 @@
 import { RequestHandler, Router } from 'express'
-import { ActivityModel, TeamModel, UserModel, WorkoutModel } from './models.js'
+import { ActivityModel, LeaderboardModel, TeamModel, UserModel, WorkoutModel } from './models.js'
 
 const router = Router()
 const ADMIN_ROLE = 'admin'
@@ -55,6 +55,12 @@ router.get('/users', async (_request, response) => {
 
 router.post('/users', requireAuthenticatedUser, requireAdminRole, async (request, response) => {
   const user = await UserModel.create(request.body)
+  await LeaderboardModel.create({
+    userId: user._id,
+    username: user.username,
+    displayName: user.displayName,
+    points: user.points,
+  })
   response.status(201).json(user)
 })
 
@@ -69,7 +75,23 @@ router.get('/activities', async (request, response) => {
 router.post('/activities', requireAuthenticatedUser, requireActivityOwnershipOrAdmin, async (request, response) => {
   const activity = await ActivityModel.create(request.body)
   if (activity.userId) {
-    await UserModel.findByIdAndUpdate(activity.userId, { $inc: { points: activity.points } })
+    const updatedUser = await UserModel.findByIdAndUpdate(activity.userId, { $inc: { points: activity.points } }, { new: true })
+      .select('username displayName points')
+      .lean()
+
+    if (updatedUser) {
+      await LeaderboardModel.findOneAndUpdate(
+        { userId: activity.userId },
+        {
+          $set: {
+            username: updatedUser.username,
+            displayName: updatedUser.displayName,
+            points: updatedUser.points,
+          },
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true },
+      )
+    }
   }
   response.status(201).json(activity)
 })
@@ -84,7 +106,7 @@ router.post('/teams', requireAuthenticatedUser, requireAdminRole, async (request
 })
 
 router.get('/leaderboard', async (_request, response) => {
-  response.json(await UserModel.find().select('username displayName points').sort({ points: -1, username: 1 }))
+  response.json(await LeaderboardModel.find().select('username displayName points').sort({ points: -1, username: 1 }))
 })
 
 router.get('/workouts', async (request, response) => {

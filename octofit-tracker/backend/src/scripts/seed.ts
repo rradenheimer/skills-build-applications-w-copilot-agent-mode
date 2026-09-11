@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ActivityModel, TeamModel, UserModel, WorkoutModel } from '../models.js';
+import { ActivityModel, LeaderboardModel, TeamModel, UserModel, WorkoutModel } from '../models.js';
 
 const connectionString = process.env.MONGODB_URI || 'mongodb://localhost:27017/octofit_db';
 
@@ -15,6 +15,7 @@ async function seedDatabase() {
  */
     await Promise.all([
       ActivityModel.deleteMany({}),
+      LeaderboardModel.deleteMany({}),
       TeamModel.deleteMany({}),
       UserModel.deleteMany({}),
       WorkoutModel.deleteMany({}),
@@ -83,6 +84,15 @@ async function seedDatabase() {
       },
     ]);
 
+    const leaderboard = await LeaderboardModel.create(
+      users.map((user) => ({
+        userId: user._id,
+        username: user.username,
+        displayName: user.displayName,
+        points: user.points,
+      })),
+    );
+
     const teams = await TeamModel.create([
       {
         name: 'Trail Blazers',
@@ -118,7 +128,7 @@ async function seedDatabase() {
     ]);
 
     console.log(
-      `Database seeding complete: ${users.length} users, ${activities.length} activities, ${teams.length} teams, ${workouts.length} workouts`,
+      `Database seeding complete: ${users.length} users, ${activities.length} activities, ${teams.length} teams, ${workouts.length} workouts, ${leaderboard.length} leaderboard entries`,
     );
     await mongoose.disconnect();
   } catch (error) {

@@ -29,6 +29,13 @@ export interface Workout {
   activities: string[]
 }
 
+export interface LeaderboardEntry {
+  userId: Types.ObjectId
+  username: string
+  displayName: string
+  points: number
+}
+
 const userSchema = new Schema<User>(
   {
     username: { type: String, required: true, trim: true, unique: true },
@@ -70,7 +77,18 @@ const workoutSchema = new Schema<Workout>(
   { timestamps: true },
 )
 
+const leaderboardSchema = new Schema<LeaderboardEntry>(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+    username: { type: String, required: true, trim: true },
+    displayName: { type: String, required: true, trim: true },
+    points: { type: Number, default: 0, min: 0 },
+  },
+  { timestamps: true },
+)
+
 export const UserModel = mongoose.model<User>('User', userSchema)
 export const ActivityModel = mongoose.model<Activity>('Activity', activitySchema)
 export const TeamModel = mongoose.model<Team>('Team', teamSchema)
 export const WorkoutModel = mongoose.model<Workout>('Workout', workoutSchema)
+export const LeaderboardModel = mongoose.model<LeaderboardEntry>('Leaderboard', leaderboardSchema)
